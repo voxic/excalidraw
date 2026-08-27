@@ -7,5 +7,10 @@
       "command": "yarn start"
     }
   ],
-  "ports": [3001]
+  "ports": [
+    {
+      "name": "dev-server",
+      "port": 3001
+    }
+  ]
 }
