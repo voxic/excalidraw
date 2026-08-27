@@ -401,8 +401,6 @@ const ColorPickerComponent = ({
   return (
     <ColorPickerDnDContext.Provider value={isTopPicksCustomizable ? dnd : null}>
       <div
-        role="dialog"
-        aria-modal="true"
         className={clsx("color-picker-container", {
           "color-picker-container--no-top-picks": isCompactMode,
         })}
