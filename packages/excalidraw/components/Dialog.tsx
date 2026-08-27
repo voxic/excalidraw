@@ -27,6 +27,8 @@ export interface DialogProps {
   size?: DialogSize;
   onCloseRequest(): void;
   title: React.ReactNode | false;
+  /** accessible name of the dialog, used when `title` is not rendered */
+  label?: string;
   autofocus?: boolean;
   closeOnClickOutside?: boolean;
 }
@@ -93,6 +95,9 @@ export const Dialog = (props: DialogProps) => {
     return () => islandNode.removeEventListener("keydown", handleKeyDown);
   }, [islandNode, props.autofocus]);
 
+  const titleId = `${id}-dialog-title`;
+  const hasTitle = !!props.title;
+
   const setAppState = useExcalidrawSetAppState();
   const setIsLibraryMenuOpen = useSetAtom(isLibraryMenuOpenAtom);
 
@@ -108,14 +113,15 @@ export const Dialog = (props: DialogProps) => {
       className={clsx("Dialog", props.className, {
         "Dialog--fullscreen": isFullscreen,
       })}
-      labelledBy="dialog-title"
+      labelledBy={hasTitle ? titleId : undefined}
+      label={hasTitle ? undefined : props.label}
       maxWidth={getDialogSize(props.size)}
       onCloseRequest={onClose}
       closeOnClickOutside={props.closeOnClickOutside}
     >
       <Island ref={setIslandNode}>
-        {props.title && (
-          <h2 id={`${id}-dialog-title`} className="Dialog__title">
+        {hasTitle && (
+          <h2 id={titleId} className="Dialog__title">
             <span className="Dialog__titleContent">{props.title}</span>
           </h2>
         )}
