@@ -109,7 +109,7 @@ export const getDefaultAppState = (): Omit<
     editingFrame: null,
     elementsToHighlight: null,
     toast: null,
-    viewBackgroundColor: COLOR_PALETTE.white,
+    viewBackgroundColor: COLOR_PALETTE.blue[0],
     zenModeEnabled: false,
     zoom: {
       value: 1 as NormalizedZoomValue,

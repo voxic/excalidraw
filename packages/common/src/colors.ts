@@ -266,6 +266,7 @@ export const BUCKET_FILL_BACKGROUND_PICKS = [
 
 // ORDER matters for positioning in quick picker
 export const DEFAULT_CANVAS_BACKGROUND_PICKS = [
+  COLOR_PALETTE.blue[0],
   COLOR_PALETTE.white,
   // radix slate2
   "#f8f9fa",
@@ -273,8 +274,6 @@ export const DEFAULT_CANVAS_BACKGROUND_PICKS = [
   "#f5faff",
   // radix yellow2
   "#fffce8",
-  // radix bronze2
-  "#fdf8f6",
 ] as ColorTuple;
 
 // palette defaults

@@ -993,7 +993,7 @@ const getDefaultObservedAppState = (): ObservedAppState => {
   return {
     name: null,
     editingGroupId: null,
-    viewBackgroundColor: COLOR_PALETTE.white,
+    viewBackgroundColor: COLOR_PALETTE.blue[0],
     selectedElementIds: {},
     selectedGroupIds: {},
     selectedLinearElement: null,
