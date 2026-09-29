@@ -1,6 +1,6 @@
 import { useState, useLayoutEffect } from "react";
 
-import { isDarkTheme } from "@excalidraw/common";
+import { THEME, isDarkTheme } from "@excalidraw/common";
 
 import { useEditorInterface, useExcalidrawContainer } from "../components/App";
 import { useUIAppState } from "../context/ui-appState";
@@ -25,6 +25,7 @@ export const useCreatePortalContainer = (opts?: {
         editorInterface.formFactor === "phone",
       );
       div.classList.toggle("theme--dark", isDarkTheme(theme));
+      div.classList.toggle("theme--sepia", theme === THEME.SEPIA);
     }
   }, [div, theme, editorInterface.formFactor, opts?.className]);
 

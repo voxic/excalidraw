@@ -54,6 +54,7 @@ import {
   HelpIcon,
   LoadIcon,
   MoonIcon,
+  PaperScrollIcon,
   save,
   searchIcon,
   SunIcon,
@@ -278,6 +279,11 @@ export const ToggleTheme = (
             value: THEME.DARK,
             label: MoonIcon,
             ariaLabel: `${t("buttons.darkMode")} - ${shortcut}`,
+          },
+          {
+            value: THEME.SEPIA,
+            label: PaperScrollIcon,
+            ariaLabel: t("buttons.sepiaMode"),
           },
           {
             value: "system",

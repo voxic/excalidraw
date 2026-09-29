@@ -190,6 +190,7 @@ export const getFontFamilyFallbacks = (
 export const THEME = {
   LIGHT: "light",
   DARK: "dark",
+  SEPIA: "sepia",
 } as const;
 
 /** whether the theme uses dark-mode rendering (inverted canvas colors) */

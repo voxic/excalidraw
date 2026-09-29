@@ -22,6 +22,9 @@
       @at-root .excalidraw.theme--dark#{&} {
         background-color: #31303b;
       }
+      @at-root .excalidraw.theme--sepia#{&} {
+        background-color: var(--color-surface-mid);
+      }
 
       border-radius: var(--border-radius-md);
       border: 0;
