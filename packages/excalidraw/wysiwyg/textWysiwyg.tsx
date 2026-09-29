@@ -3,13 +3,13 @@ import {
   KEYS,
   CLASSES,
   POINTER_BUTTON,
-  THEME,
   isWritableElement,
   getFontString,
   getFontFamilyString,
   isTestEnv,
   MIME_TYPES,
   applyDarkModeFilter,
+  isDarkTheme,
   isRTL,
 } from "@excalidraw/common";
 import { pointFrom, pointRotateRads, type Radians } from "@excalidraw/math";
@@ -403,7 +403,7 @@ export const textWysiwyg = ({
         verticalAlign,
         color: applyDarkModeFilter(
           updatedTextElement.strokeColor,
-          appState.theme === THEME.DARK,
+          isDarkTheme(appState.theme),
         ),
         opacity: updatedTextElement.opacity / 100,
         maxHeight: `${editorMaxHeight}px`,

@@ -17,8 +17,8 @@ import {
   FRAME_STYLE,
   getFeatureFlag,
   invariant,
+  isDarkTheme,
   shouldRotateWithDiscreteAngle,
-  THEME,
 } from "@excalidraw/common";
 
 import {
@@ -282,10 +282,9 @@ const renderBindingHighlightForBindableElement_simple = (
       context.translate(suggestedBinding.element.x, suggestedBinding.element.y);
 
       context.lineWidth = FRAME_STYLE.strokeWidth / appState.zoom.value;
-      context.strokeStyle =
-        appState.theme === THEME.DARK
-          ? `rgba(3, 93, 161, 1)`
-          : `rgba(106, 189, 252, 1)`;
+      context.strokeStyle = isDarkTheme(appState.theme)
+        ? `rgba(3, 93, 161, 1)`
+        : `rgba(106, 189, 252, 1)`;
 
       if (FRAME_STYLE.radius && context.roundRect) {
         context.beginPath();
@@ -323,10 +322,9 @@ const renderBindingHighlightForBindableElement_simple = (
       context.lineWidth =
         clamp(1.75, suggestedBinding.element.strokeWidth, 4) /
         Math.max(0.25, appState.zoom.value);
-      context.strokeStyle =
-        appState.theme === THEME.DARK
-          ? `rgba(3, 93, 161, 1)`
-          : `rgba(106, 189, 252, 1)`;
+      context.strokeStyle = isDarkTheme(appState.theme)
+        ? `rgba(3, 93, 161, 1)`
+        : `rgba(106, 189, 252, 1)`;
 
       switch (suggestedBinding.element.type) {
         case "ellipse":
@@ -552,19 +550,17 @@ const renderBindingHighlightForBindableElement_simple = (
               hoveredMidpoint.distance <= highlightThreshold * 2));
 
         if (isHighlighted) {
-          context.fillStyle =
-            appState.theme === THEME.DARK
-              ? `rgba(3, 93, 161, 1)`
-              : `rgba(106, 189, 252, 1)`;
+          context.fillStyle = isDarkTheme(appState.theme)
+            ? `rgba(3, 93, 161, 1)`
+            : `rgba(106, 189, 252, 1)`;
 
           context.beginPath();
           context.arc(midpoint[0], midpoint[1], midpointRadius, 0, 2 * Math.PI);
           context.fill();
         } else if (isShown) {
-          context.fillStyle =
-            appState.theme === THEME.DARK
-              ? `rgba(0, 0, 0, 0.8)`
-              : `rgba(65, 65, 65, 0.5)`;
+          context.fillStyle = isDarkTheme(appState.theme)
+            ? `rgba(0, 0, 0, 0.8)`
+            : `rgba(65, 65, 65, 0.5)`;
           context.beginPath();
           context.arc(midpoint[0], midpoint[1], midpointRadius, 0, 2 * Math.PI);
           context.fill();
@@ -625,10 +621,9 @@ const renderBindingHighlightForBindableElement_complex = (
       context.translate(element.x, element.y);
 
       context.lineWidth = FRAME_STYLE.strokeWidth / appState.zoom.value;
-      context.strokeStyle =
-        appState.theme === THEME.DARK
-          ? `rgba(3, 93, 161, ${opacity})`
-          : `rgba(106, 189, 252, ${opacity})`;
+      context.strokeStyle = isDarkTheme(appState.theme)
+        ? `rgba(3, 93, 161, ${opacity})`
+        : `rgba(106, 189, 252, ${opacity})`;
 
       if (FRAME_STYLE.radius && context.roundRect) {
         context.beginPath();
@@ -666,10 +661,9 @@ const renderBindingHighlightForBindableElement_complex = (
       context.lineWidth =
         clamp(2.5, element.strokeWidth * 1.75, 4) /
         Math.max(0.25, appState.zoom.value);
-      context.strokeStyle =
-        appState.theme === THEME.DARK
-          ? `rgba(3, 93, 161, ${opacity / 2})`
-          : `rgba(106, 189, 252, ${opacity / 2})`;
+      context.strokeStyle = isDarkTheme(appState.theme)
+        ? `rgba(3, 93, 161, ${opacity / 2})`
+        : `rgba(106, 189, 252, ${opacity / 2})`;
 
       switch (element.type) {
         case "ellipse":
@@ -893,10 +887,9 @@ const renderBindingHighlightForBindableElement_complex = (
         );
       });
 
-      context.fillStyle =
-        appState.theme === THEME.DARK
-          ? `rgba(3, 93, 161, ${opacity})`
-          : `rgba(106, 189, 252, ${opacity})`;
+      context.fillStyle = isDarkTheme(appState.theme)
+        ? `rgba(3, 93, 161, ${opacity})`
+        : `rgba(106, 189, 252, ${opacity})`;
 
       midpoints.forEach((midpoint) => {
         context.beginPath();
@@ -2032,7 +2025,7 @@ const _renderInteractiveScene = ({
       );
 
       context.save();
-      if (appState.theme === THEME.LIGHT) {
+      if (!isDarkTheme(appState.theme)) {
         if (focus) {
           context.fillStyle = "rgba(255, 124, 0, 0.4)";
         } else {

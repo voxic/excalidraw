@@ -2,6 +2,7 @@ import {
   applyDarkModeFilter,
   COLOR_WHITE,
   FRAME_STYLE,
+  isDarkTheme,
   THEME,
   throttleRAF,
 } from "@excalidraw/common";
@@ -74,6 +75,9 @@ const strokeGrid = (
 
   const spaceWidth = 1 / zoom.value;
 
+  const gridLineColor =
+    GridLineColor[isDarkTheme(theme) ? THEME.DARK : THEME.LIGHT];
+
   context.save();
 
   // Offset rendering by 0.5 to ensure that 1px wide lines are crisp.
@@ -99,9 +103,7 @@ const strokeGrid = (
 
     context.beginPath();
     context.setLineDash(isBold ? [] : lineDash);
-    context.strokeStyle = isBold
-      ? GridLineColor[theme].bold
-      : GridLineColor[theme].regular;
+    context.strokeStyle = isBold ? gridLineColor.bold : gridLineColor.regular;
     context.moveTo(x, offsetY - gridSize);
     context.lineTo(x, Math.ceil(offsetY + height + gridSize * 2));
     context.stroke();
@@ -120,9 +122,7 @@ const strokeGrid = (
 
     context.beginPath();
     context.setLineDash(isBold ? [] : lineDash);
-    context.strokeStyle = isBold
-      ? GridLineColor[theme].bold
-      : GridLineColor[theme].regular;
+    context.strokeStyle = isBold ? gridLineColor.bold : gridLineColor.regular;
     context.moveTo(offsetX - gridSize, y);
     context.lineTo(Math.ceil(offsetX + width + gridSize * 2), y);
     context.stroke();

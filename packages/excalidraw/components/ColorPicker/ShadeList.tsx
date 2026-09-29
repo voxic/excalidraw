@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 import {
   applyDarkModeFilter,
-  THEME,
+  isDarkTheme,
   type ColorPaletteCustom,
 } from "@excalidraw/common";
 
@@ -61,10 +61,7 @@ export const ShadeList = ({
       return (
         <div className="color-picker-content--default shades">
           {shades.map((color, i) => {
-            const displayColor = applyDarkModeFilter(
-              color,
-              theme === THEME.DARK,
-            );
+            const displayColor = applyDarkModeFilter(color, isDarkTheme(theme));
             return (
               <button
                 ref={

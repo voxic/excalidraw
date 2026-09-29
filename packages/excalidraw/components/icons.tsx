@@ -9,14 +9,14 @@
 import clsx from "clsx";
 import React from "react";
 
-import { THEME } from "@excalidraw/common";
+import { isDarkTheme } from "@excalidraw/common";
 
 import type { Theme } from "@excalidraw/element/types";
 
 export const iconFillColor = (theme: Theme) => "var(--icon-fill-color)";
 
 const handlerColor = (theme: Theme) =>
-  theme === THEME.LIGHT ? "#fff" : "#1e1e1e";
+  isDarkTheme(theme) ? "#1e1e1e" : "#fff";
 
 type Opts = {
   width?: number;

@@ -1,4 +1,4 @@
-import { CURSOR_TYPE, MIME_TYPES, THEME } from "@excalidraw/common";
+import { CURSOR_TYPE, MIME_TYPES, isDarkTheme } from "@excalidraw/common";
 
 import { isHandToolActive, isEraserActive } from "../appState";
 
@@ -138,10 +138,9 @@ export class AppCursor {
         `url(${createBucketFillCursorDataURL(bucketFillColor!)}) 5 18, auto`,
       );
     } else if (activeTool.type === "laser") {
-      const url =
-        this.app.state.theme === THEME.LIGHT
-          ? laserPointerCursorDataURL_lightMode
-          : laserPointerCursorDataURL_darkMode;
+      const url = isDarkTheme(this.app.state.theme)
+        ? laserPointerCursorDataURL_darkMode
+        : laserPointerCursorDataURL_lightMode;
       this.set(`url(${url}), auto`);
     } else if (!["image", "custom"].includes(activeTool.type)) {
       this.set(CURSOR_TYPE.CROSSHAIR);
@@ -170,7 +169,7 @@ export class AppCursor {
     const theme = this.app.state.theme;
 
     if (!this.eraserCanvasCache || this.eraserCanvasCache.theme !== theme) {
-      const isDarkTheme = theme === THEME.DARK;
+      const isDarkMode = isDarkTheme(theme);
       this.eraserCanvasCache = document.createElement("canvas");
       this.eraserCanvasCache.theme = theme;
       this.eraserCanvasCache.height = cursorImageSizePx;
@@ -185,9 +184,9 @@ export class AppCursor {
         0,
         2 * Math.PI,
       );
-      context.fillStyle = isDarkTheme ? "#000" : "#fff";
+      context.fillStyle = isDarkMode ? "#000" : "#fff";
       context.fill();
-      context.strokeStyle = isDarkTheme ? "#fff" : "#000";
+      context.strokeStyle = isDarkMode ? "#fff" : "#000";
       context.stroke();
       this.eraserPreviewDataURL = this.eraserCanvasCache.toDataURL(
         MIME_TYPES.svg,

@@ -6,7 +6,7 @@ import {
   isColorDark,
   KEYS,
   MIME_TYPES,
-  THEME,
+  isDarkTheme,
   removeDarkModeFilter,
   rgbToHex,
 } from "@excalidraw/common";
@@ -122,7 +122,7 @@ export const EyeDropper: React.FC<{
     };
 
     const getColorToApply = (color: string) =>
-      appState.theme === THEME.DARK ? removeDarkModeFilter(color) : color;
+      isDarkTheme(appState.theme) ? removeDarkModeFilter(color) : color;
 
     const mouseMoveListener = ({
       clientX,

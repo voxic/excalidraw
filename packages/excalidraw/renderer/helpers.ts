@@ -1,4 +1,8 @@
-import { COLOR_WHITE, THEME, applyDarkModeFilter } from "@excalidraw/common";
+import {
+  COLOR_WHITE,
+  applyDarkModeFilter,
+  isDarkTheme,
+} from "@excalidraw/common";
 
 import type { StaticCanvasRenderConfig } from "../scene/types";
 import type { AppState, StaticCanvasAppState } from "../types";
@@ -73,7 +77,7 @@ export const bootstrapCanvas = ({
       context.fillStyle = COLOR_WHITE;
       context.fillStyle = applyDarkModeFilter(
         viewBackgroundColor,
-        theme === THEME.DARK,
+        isDarkTheme(theme),
       );
       context.fillRect(0, 0, normalizedWidth, normalizedHeight);
       context.restore();

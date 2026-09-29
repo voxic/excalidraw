@@ -1,7 +1,7 @@
 import {
   DEFAULT_EXPORT_PADDING,
   EDITOR_LS_KEYS,
-  THEME,
+  isDarkTheme,
 } from "@excalidraw/common";
 
 import { convertToExcalidrawElements } from "@excalidraw/element";
@@ -112,7 +112,7 @@ export const convertMermaidToExcalidraw = async ({
         Math.max(parent.offsetWidth, parent.offsetHeight) *
         window.devicePixelRatio,
       appState: {
-        exportWithDarkMode: theme === THEME.DARK,
+        exportWithDarkMode: isDarkTheme(theme),
       },
     });
 

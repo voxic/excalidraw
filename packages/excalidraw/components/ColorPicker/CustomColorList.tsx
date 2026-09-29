@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
 
-import { applyDarkModeFilter, THEME } from "@excalidraw/common";
+import { applyDarkModeFilter, isDarkTheme } from "@excalidraw/common";
 
 import type { Theme } from "@excalidraw/element/types";
 
@@ -42,7 +42,7 @@ export const CustomColorList = ({
   return (
     <div className="color-picker-content--default">
       {colors.map((c, i) => {
-        const displayColor = applyDarkModeFilter(c, theme === THEME.DARK);
+        const displayColor = applyDarkModeFilter(c, isDarkTheme(theme));
         return (
           <button
             ref={color === c ? btnRef : undefined}

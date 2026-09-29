@@ -1,6 +1,7 @@
 import type {
   ExcalidrawElement,
   FontFamilyValues,
+  Theme,
 } from "@excalidraw/element/types";
 import type { AppProps, AppState } from "@excalidraw/excalidraw/types";
 
@@ -190,6 +191,9 @@ export const THEME = {
   LIGHT: "light",
   DARK: "dark",
 } as const;
+
+/** whether the theme uses dark-mode rendering (inverted canvas colors) */
+export const isDarkTheme = (theme: Theme | undefined) => theme === THEME.DARK;
 
 export const DARK_THEME_FILTER = "invert(93%) hue-rotate(180deg)";
 

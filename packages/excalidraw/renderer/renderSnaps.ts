@@ -1,6 +1,6 @@
 import { pointFrom, type GlobalPoint, type LocalPoint } from "@excalidraw/math";
 
-import { THEME } from "@excalidraw/common";
+import { isDarkTheme } from "@excalidraw/common";
 
 import type { PointSnapLine, PointerSnapLine } from "../snapping";
 import type { InteractiveCanvasAppState } from "../types";
@@ -22,7 +22,7 @@ export const renderSnaps = (
   // Don't change if zen mode, because we draw only crosses, we want the
   // colors to be more visible
   const snapColor =
-    appState.theme === THEME.LIGHT || appState.zenModeEnabled
+    !isDarkTheme(appState.theme) || appState.zenModeEnabled
       ? SNAP_COLOR_LIGHT
       : SNAP_COLOR_DARK;
   // in zen mode make the cross more visible since we don't draw the lines

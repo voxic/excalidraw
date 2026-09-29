@@ -8,7 +8,7 @@ import {
   DEFAULT_ELEMENT_BACKGROUND_PICKS,
   DEFAULT_ELEMENT_STROKE_PICKS,
   isColorDark,
-  THEME,
+  isDarkTheme,
 } from "@excalidraw/common";
 
 import type { Theme } from "@excalidraw/element/types";
@@ -115,7 +115,7 @@ export const TopPicks = ({
       )}
       {colors.map((color: string, index: number) => {
         const reorderOffset = getReorderOffset(index);
-        const displayColor = applyDarkModeFilter(color, theme === THEME.DARK);
+        const displayColor = applyDarkModeFilter(color, isDarkTheme(theme));
         return (
           <button
             className={clsx("color-picker__button", {
