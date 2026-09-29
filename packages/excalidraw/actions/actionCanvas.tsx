@@ -6,6 +6,7 @@ import {
   ZOOM_STEP,
   CODES,
   KEYS,
+  isDarkTheme,
 } from "@excalidraw/common";
 
 import { getNonDeletedElements } from "@excalidraw/element";
@@ -413,18 +414,18 @@ export const actionZoomToFit = register({
 export const actionToggleTheme = register<AppState["theme"]>({
   name: "toggleTheme",
   label: (_, appState) => {
-    return appState.theme === THEME.DARK
+    return isDarkTheme(appState.theme)
       ? "buttons.lightMode"
       : "buttons.darkMode";
   },
   keywords: ["toggle", "dark", "light", "mode", "theme"],
   icon: (appState, elements) =>
-    appState.theme === THEME.LIGHT ? MoonIcon : SunIcon,
+    isDarkTheme(appState.theme) ? SunIcon : MoonIcon,
   viewMode: true,
   trackEvent: { category: "canvas" },
   perform: (_, appState, value, app) => {
     const nextTheme =
-      value || (appState.theme === THEME.LIGHT ? THEME.DARK : THEME.LIGHT);
+      value || (isDarkTheme(appState.theme) ? THEME.LIGHT : THEME.DARK);
 
     if (app.props.onThemeChange) {
       app.props.onThemeChange(nextTheme);

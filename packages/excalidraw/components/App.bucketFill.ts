@@ -4,8 +4,8 @@ import {
   COLOR_PALETTE,
   DEFAULT_ELEMENT_BACKGROUND_COLOR_INDEX,
   getSizeFromPoints,
+  isDarkTheme,
   isTransparent,
-  THEME,
 } from "@excalidraw/common";
 import { pointFrom, type GlobalPoint, type LocalPoint } from "@excalidraw/math";
 
@@ -297,5 +297,5 @@ export class AppBucketFill {
   ) =>
     isTransparent(backgroundColor)
       ? COLOR_PALETTE.green[DEFAULT_ELEMENT_BACKGROUND_COLOR_INDEX]
-      : applyDarkModeFilter(backgroundColor, theme === THEME.DARK);
+      : applyDarkModeFilter(backgroundColor, isDarkTheme(theme));
 }

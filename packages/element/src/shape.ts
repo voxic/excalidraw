@@ -25,6 +25,7 @@ import {
   COLOR_PALETTE,
   LINE_POLYGON_POINT_MERGE_DISTANCE,
   applyDarkModeFilter,
+  isDarkTheme,
   DEFAULT_STROKE_STREAMLINE,
 } from "@excalidraw/common";
 
@@ -764,7 +765,7 @@ const _generateElementShape = (
     theme?: AppState["theme"];
   },
 ): ElementShape => {
-  const isDarkMode = theme === THEME.DARK;
+  const isDarkMode = isDarkTheme(theme);
   switch (element.type) {
     case "rectangle":
     case "iframe":

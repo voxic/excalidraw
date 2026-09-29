@@ -278,4 +278,63 @@
     --color-border-outline-variant: #46464f;
     --color-surface-primary-container: #403e6a;
   }
+
+  &.theme--sepia {
+    --button-gray-1: #ece2cf;
+    --button-gray-2: #d8c7a6;
+    --button-gray-3: #c2ad88;
+    --focus-highlight-color: #e0b57c;
+    --default-bg-color: #fffcf6;
+    --input-bg-color: #fffcf6;
+    --input-border-color: #d9c9a8;
+    --input-hover-bg-color: #f5ecda;
+    --input-label-color: #5c4a32;
+    --island-bg-color: #fbf6ec;
+    --island-bg-color-alt: #fbf6ec;
+    --link-color: #9a4f1d;
+    --link-color-hover: #80401a;
+    --link-color-active: #c98a4f;
+    --overlay-bg-color: #{color.adjust(#fbf6ec, $alpha: -0.12)};
+    --popup-secondary-bg-color: #f4ecdc;
+    --popup-text-color: #33271a;
+    --popup-text-inverted-color: #fbf6ec;
+    --select-highlight-color: #95592a;
+
+    --color-slider-track: #e2c69c;
+
+    --color-selection: #95592a;
+
+    --color-primary: #95592a;
+    --color-primary-darker: #824c22;
+    --color-primary-darkest: #704214;
+    --color-primary-light: #ecd8b6;
+    --color-primary-light-darker: #e5cda4;
+    --color-primary-hover: #824c22;
+
+    --color-gray-10: #f5efe4;
+    --color-gray-20: #ebe2d2;
+    --color-gray-30: #d8ccb8;
+    --color-gray-40: #b9ab94;
+    --color-gray-50: #998c76;
+    --color-gray-60: #7a6c57;
+    --color-gray-70: #5c5143;
+    --color-gray-80: #3e362b;
+    --color-gray-85: #26211a;
+    --color-gray-90: #201b15;
+    --color-gray-100: #15110b;
+
+    --color-logo-text: #4a2b10;
+
+    --color-surface-high: #f2e6cf;
+    --color-surface-mid: #f5eddd;
+    --color-surface-low: #efe5d1;
+    --color-surface-lowest: #fffcf6;
+    --color-on-surface: #33271a;
+    --color-brand-hover: #824c22;
+    --color-on-primary-container: #4a2b10;
+    --color-surface-primary-container: #ead3ab;
+    --color-brand-active: #704214;
+    --color-border-outline: #7f6d56;
+    --color-border-outline-variant: #cfbd9c;
+  }
 }

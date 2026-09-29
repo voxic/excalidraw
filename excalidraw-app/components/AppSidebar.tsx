@@ -1,10 +1,12 @@
-import { DefaultSidebar, Sidebar, THEME } from "@excalidraw/excalidraw";
+import { DefaultSidebar, Sidebar } from "@excalidraw/excalidraw";
 import {
   messageCircleIcon,
   presentationIcon,
 } from "@excalidraw/excalidraw/components/icons";
 import { LinkButton } from "@excalidraw/excalidraw/components/LinkButton";
 import { useUIAppState } from "@excalidraw/excalidraw/context/ui-appState";
+
+import { isDarkTheme } from "@excalidraw/common";
 
 import "./AppSidebar.scss";
 
@@ -90,7 +92,7 @@ export const AppSidebar = () => {
             className="app-sidebar-promo-image"
             style={{
               ["--image-source" as any]: `url(/sidebar-comments-promo-${
-                theme === THEME.DARK ? "dark" : "light"
+                isDarkTheme(theme) ? "dark" : "light"
               }.jpg)`,
               opacity: 0.9,
             }}
@@ -111,7 +113,7 @@ export const AppSidebar = () => {
             className="app-sidebar-promo-image"
             style={{
               ["--image-source" as any]: `url(/sidebar-presentation-promo-${
-                theme === THEME.DARK ? "dark" : "light"
+                isDarkTheme(theme) ? "dark" : "light"
               }.jpg)`,
               opacity: 0.7,
             }}

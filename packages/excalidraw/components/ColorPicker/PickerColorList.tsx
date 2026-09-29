@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import {
   applyDarkModeFilter,
   isColorDark,
-  THEME,
+  isDarkTheme,
   type ColorPaletteCustom,
 } from "@excalidraw/common";
 
@@ -83,7 +83,7 @@ const PickerColorList = ({
         }
 
         const keybinding = colorPickerHotkeyBindings[index];
-        const displayColor = applyDarkModeFilter(color, theme === THEME.DARK);
+        const displayColor = applyDarkModeFilter(color, isDarkTheme(theme));
         const label = t(
           `colors.${key.replace(/\d+/, "")}` as unknown as TranslationKeys,
           null,

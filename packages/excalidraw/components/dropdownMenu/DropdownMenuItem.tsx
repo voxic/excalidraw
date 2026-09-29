@@ -1,6 +1,6 @@
 import React from "react";
 
-import { THEME } from "@excalidraw/common";
+import { isDarkTheme } from "@excalidraw/common";
 
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 
@@ -82,7 +82,7 @@ export const DropDownMenuItemBadge = ({
     borderRadius: 6,
     fontSize: 9,
     fontFamily: "Cascadia, monospace",
-    border: theme === THEME.LIGHT ? "1.5px solid white" : "none",
+    border: isDarkTheme(theme) ? "none" : "1.5px solid white",
   };
 
   switch (type) {

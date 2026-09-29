@@ -1,4 +1,4 @@
-import { getStrokeWidthByKey, THEME } from "@excalidraw/common";
+import { getStrokeWidthByKey, isDarkTheme } from "@excalidraw/common";
 import { clamp, pointFrom } from "@excalidraw/math";
 
 import type { LaserPointerOptions } from "@excalidraw/laser-pointer";
@@ -16,9 +16,9 @@ export class DrawShapeTrail implements Trail {
     this.trail = new AnimatedTrail(this.app, {
       ...this.getTrailOptions(),
       fill: () =>
-        app.state.theme === THEME.LIGHT
-          ? "rgba(0, 0, 0, 0.2)"
-          : "rgba(255, 255, 255, 0.2)",
+        isDarkTheme(app.state.theme)
+          ? "rgba(255, 255, 255, 0.2)"
+          : "rgba(0, 0, 0, 0.2)",
     });
   }
 

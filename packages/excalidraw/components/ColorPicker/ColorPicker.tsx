@@ -9,8 +9,8 @@ import {
   DEFAULT_ELEMENT_BACKGROUND_PICKS,
   DEFAULT_ELEMENT_STROKE_PICKS,
   isColorDark,
+  isDarkTheme,
   isWritableElement,
-  THEME,
 } from "@excalidraw/common";
 
 import type { ColorTuple, ColorPaletteCustom } from "@excalidraw/common";
@@ -283,7 +283,7 @@ const ColorPickerTrigger = ({
   const isMobileMode = stylesPanelMode === "mobile";
   const dnd = useColorPickerDnD();
   const displayColor = color
-    ? applyDarkModeFilter(color, theme === THEME.DARK)
+    ? applyDarkModeFilter(color, isDarkTheme(theme))
     : null;
   const handleClick = (e: React.MouseEvent) => {
     // use pointerdown so we run before outside-close logic

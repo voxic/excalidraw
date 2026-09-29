@@ -1,12 +1,16 @@
 import { queryByText, queryByTestId } from "@testing-library/react";
 import { useMemo } from "react";
 
-import { THEME } from "@excalidraw/common";
+import { CODES, THEME } from "@excalidraw/common";
 
 import { t } from "../i18n";
 import { Excalidraw, Footer, MainMenu } from "../index";
 import { actionExportWithDarkMode } from "../actions/actionExport";
+import { actionToggleTheme } from "../actions/actionCanvas";
+import { MoonIcon, SunIcon } from "../components/icons";
+import * as StaticScene from "../renderer/staticScene";
 
+import { Keyboard } from "./helpers/ui";
 import {
   act,
   fireEvent,
@@ -15,6 +19,8 @@ import {
   render,
   waitFor,
 } from "./test-utils";
+
+import type { AppState } from "../types";
 
 const { h } = window;
 
@@ -485,6 +491,198 @@ describe("<Excalidraw/>", () => {
 
       expect(onThemeChange).toHaveBeenCalledWith(THEME.DARK);
       expect(h.state.theme).toBe(THEME.LIGHT);
+    });
+  });
+
+  describe("Test sepia theme", () => {
+    it("should toggle the theme classes on the editor root", async () => {
+      const { container } = await render(<Excalidraw theme={THEME.SEPIA} />);
+      const root = container.querySelector(".excalidraw")!;
+
+      expect(h.state.theme).toBe(THEME.SEPIA);
+      expect(root).toHaveClass("theme--sepia");
+      expect(root).not.toHaveClass("theme--dark");
+
+      act(() => {
+        h.setState({ theme: THEME.DARK });
+      });
+      expect(root).toHaveClass("theme--dark");
+      expect(root).not.toHaveClass("theme--sepia");
+
+      act(() => {
+        h.setState({ theme: THEME.LIGHT });
+      });
+      expect(root).not.toHaveClass("theme--dark");
+      expect(root).not.toHaveClass("theme--sepia");
+    });
+
+    it("should toggle the theme classes on portal containers", async () => {
+      await render(<Excalidraw theme={THEME.SEPIA} />);
+
+      act(() => {
+        h.setState({ openDialog: { name: "help" } });
+      });
+
+      const modalContainer = await waitFor(() => {
+        const element = document.querySelector(".excalidraw-modal-container");
+        expect(element).not.toBeNull();
+        return element!;
+      });
+      expect(modalContainer).toHaveClass("excalidraw", "theme--sepia");
+      expect(modalContainer).not.toHaveClass("theme--dark");
+
+      act(() => {
+        h.setState({ theme: THEME.DARK });
+      });
+      expect(modalContainer).toHaveClass("theme--dark");
+      expect(modalContainer).not.toHaveClass("theme--sepia");
+    });
+
+    it("should export like light mode", async () => {
+      await render(<Excalidraw theme={THEME.SEPIA} />);
+
+      expect(h.state.exportWithDarkMode).toBe(false);
+
+      act(() => {
+        h.setState({ exportWithDarkMode: true });
+      });
+
+      await waitFor(() => {
+        expect(h.state.exportWithDarkMode).toBe(false);
+      });
+    });
+
+    it("should render the grid without dark mode colors", async () => {
+      const renderStaticScene = vi.spyOn(StaticScene, "renderStaticScene");
+
+      try {
+        await render(<Excalidraw theme={THEME.SEPIA} gridModeEnabled />);
+
+        const sepiaGridRenders = renderStaticScene.mock.calls.filter(
+          ([config]) =>
+            config.renderConfig.renderGrid &&
+            config.renderConfig.theme === THEME.SEPIA,
+        );
+        expect(sepiaGridRenders.length).toBeGreaterThan(0);
+        expect(
+          renderStaticScene.mock.results.every(
+            (result) => result.type === "return",
+          ),
+        ).toBe(true);
+      } finally {
+        renderStaticScene.mockRestore();
+      }
+    });
+
+    it("should toggle to dark and then light from the main menu", async () => {
+      const { container } = await render(<Excalidraw />);
+
+      act(() => {
+        h.setState({ theme: THEME.SEPIA });
+      });
+
+      toggleMenu(container);
+      const getToggle = () => queryByTestId(container, "toggle-dark-mode")!;
+
+      expect(getToggle().textContent).toContain(t("buttons.darkMode"));
+
+      fireEvent.click(getToggle());
+      expect(h.state.theme).toBe(THEME.DARK);
+      expect(getToggle().textContent).toContain(t("buttons.lightMode"));
+
+      fireEvent.click(getToggle());
+      expect(h.state.theme).toBe(THEME.LIGHT);
+      expect(getToggle().textContent).toContain(t("buttons.darkMode"));
+    });
+
+    it("should toggle to dark and then light with the keyboard shortcut", async () => {
+      await render(<Excalidraw handleKeyboardGlobally={true} />);
+
+      act(() => {
+        h.setState({ theme: THEME.SEPIA });
+      });
+
+      Keyboard.withModifierKeys({ alt: true, shift: true }, () => {
+        Keyboard.codeDown(CODES.D);
+      });
+      expect(h.state.theme).toBe(THEME.DARK);
+
+      Keyboard.withModifierKeys({ alt: true, shift: true }, () => {
+        Keyboard.codeDown(CODES.D);
+      });
+      expect(h.state.theme).toBe(THEME.LIGHT);
+    });
+
+    it("should label the toggle theme action as switching to dark mode", async () => {
+      await render(<Excalidraw />);
+
+      const getLabelAndIcon = (theme: AppState["theme"]) => {
+        const appState = { ...h.state, theme };
+        const { label, icon } = actionToggleTheme;
+        return [
+          typeof label === "function"
+            ? label(h.elements, appState, h.app)
+            : label,
+          typeof icon === "function" ? icon(appState, h.elements) : icon,
+        ];
+      };
+
+      expect(getLabelAndIcon(THEME.LIGHT)).toEqual([
+        "buttons.darkMode",
+        MoonIcon,
+      ]);
+      expect(getLabelAndIcon(THEME.SEPIA)).toEqual([
+        "buttons.darkMode",
+        MoonIcon,
+      ]);
+      expect(getLabelAndIcon(THEME.DARK)).toEqual([
+        "buttons.lightMode",
+        SunIcon,
+      ]);
+    });
+
+    it("should offer sepia in the theme radio", async () => {
+      const onThemeChange = vi.fn();
+      const ThemedExcalidraw = ({ theme }: { theme: AppState["theme"] }) => (
+        <Excalidraw theme={theme} onThemeChange={onThemeChange}>
+          <MainMenu>
+            <MainMenu.DefaultItems.ToggleTheme allowSystemTheme theme={theme} />
+          </MainMenu>
+        </Excalidraw>
+      );
+
+      const { container, rerender } = await render(
+        <ThemedExcalidraw theme={THEME.LIGHT} />,
+      );
+      toggleMenu(container);
+
+      const getRadios = () =>
+        Array.from(
+          container.querySelectorAll<HTMLInputElement>(
+            'input[type="radio"][name="theme"]',
+          ),
+        );
+
+      expect(
+        getRadios().map((radio) => radio.getAttribute("aria-label")),
+      ).toEqual([
+        expect.stringContaining(t("buttons.lightMode")),
+        expect.stringContaining(t("buttons.darkMode")),
+        t("buttons.sepiaMode"),
+        t("buttons.systemMode"),
+      ]);
+      expect(getRadios()[0].checked).toBe(true);
+
+      fireEvent.click(getRadios()[2]);
+      expect(onThemeChange).toHaveBeenCalledWith(THEME.SEPIA);
+
+      rerender(<ThemedExcalidraw theme={THEME.SEPIA} />);
+
+      expect(h.state.theme).toBe(THEME.SEPIA);
+      expect(getRadios()[2].checked).toBe(true);
+      expect(container.querySelector(".excalidraw")).toHaveClass(
+        "theme--sepia",
+      );
     });
   });
 

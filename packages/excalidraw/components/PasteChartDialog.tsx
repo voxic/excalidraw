@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 
+import { isDarkTheme } from "@excalidraw/common";
 import { newTextElement } from "@excalidraw/element";
 
 import type { ChartType } from "@excalidraw/element/types";
@@ -77,7 +78,7 @@ const ChartPreviewBtn = (props: {
         {
           exportBackground: false,
           viewBackgroundColor: "#fff",
-          exportWithDarkMode: theme === "dark",
+          exportWithDarkMode: isDarkTheme(theme),
         },
         null, // files
         {
@@ -139,7 +140,7 @@ const PlainTextPreviewBtn = (props: {
         {
           exportBackground: false,
           viewBackgroundColor: "#fff",
-          exportWithDarkMode: theme === "dark",
+          exportWithDarkMode: isDarkTheme(theme),
         },
         null,
         {

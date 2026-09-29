@@ -9,14 +9,14 @@
 import clsx from "clsx";
 import React from "react";
 
-import { THEME } from "@excalidraw/common";
+import { isDarkTheme } from "@excalidraw/common";
 
 import type { Theme } from "@excalidraw/element/types";
 
 export const iconFillColor = (theme: Theme) => "var(--icon-fill-color)";
 
 const handlerColor = (theme: Theme) =>
-  theme === THEME.LIGHT ? "#fff" : "#1e1e1e";
+  isDarkTheme(theme) ? "#1e1e1e" : "#fff";
 
 type Opts = {
   width?: number;
@@ -2339,6 +2339,15 @@ export const DeviceDesktopIcon = createIcon(
   <g stroke="currentColor">
     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
     <path d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-16a1 1 0 0 1-1-1v-10zM7 20h10M9 16v4M15 16v4" />
+  </g>,
+  { ...tablerIconProps, strokeWidth: 1.5 },
+);
+
+// tabler-icons: script
+export const PaperScrollIcon = createIcon(
+  <g stroke="currentColor">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M17 20h-11a3 3 0 0 1 0 -6h11a3 3 0 0 0 0 6h1a3 3 0 0 0 3 -3v-11a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v8" />
   </g>,
   { ...tablerIconProps, strokeWidth: 1.5 },
 );

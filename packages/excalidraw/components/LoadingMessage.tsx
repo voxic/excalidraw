@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useState, useEffect } from "react";
 
-import { THEME } from "@excalidraw/common";
+import { isDarkTheme } from "@excalidraw/common";
 
 import type { Theme } from "@excalidraw/element/types";
 
@@ -32,7 +32,7 @@ export const LoadingMessage: React.FC<{ delay?: number; theme?: Theme }> = ({
   return (
     <div
       className={clsx("LoadingMessage", {
-        "LoadingMessage--dark": theme === THEME.DARK,
+        "LoadingMessage--dark": isDarkTheme(theme),
       })}
     >
       <div>

@@ -1967,6 +1967,32 @@ describe("textWysiwyg", () => {
       });
       expect(colorsAreEqual(editor.style.color, originalColor)).toBe(true);
     });
+
+    it("should not invert textarea color in sepia mode", async () => {
+      const originalColor = "#ff0000";
+
+      const textElement = API.createElement({
+        type: "text",
+        text: "test",
+        strokeColor: originalColor,
+      });
+
+      API.setElements([textElement]);
+
+      mouse.doubleClickOn(textElement as ExcalidrawTextElement);
+
+      const editor = await getTextEditor({ waitForEditor: true });
+
+      act(() => {
+        h.setState({ theme: THEME.DARK });
+        h.app.scene.mutateElement(textElement, {});
+      });
+      act(() => {
+        h.setState({ theme: THEME.SEPIA });
+        h.app.scene.mutateElement(textElement, {});
+      });
+      expect(colorsAreEqual(editor.style.color, originalColor)).toBe(true);
+    });
   });
 
   describe("autoResize handle", () => {

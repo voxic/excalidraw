@@ -1,6 +1,7 @@
 import type {
   ExcalidrawElement,
   FontFamilyValues,
+  Theme,
 } from "@excalidraw/element/types";
 import type { AppProps, AppState } from "@excalidraw/excalidraw/types";
 
@@ -189,7 +190,17 @@ export const getFontFamilyFallbacks = (
 export const THEME = {
   LIGHT: "light",
   DARK: "dark",
+  SEPIA: "sepia",
 } as const;
+
+const THEME_VALUES: ReadonlySet<string> = new Set(Object.values(THEME));
+
+export const isTheme = (value: unknown): value is Theme =>
+  typeof value === "string" && THEME_VALUES.has(value);
+
+/** whether the theme uses dark-mode rendering (inverted canvas colors) */
+export const isDarkTheme = (theme: Theme | null | undefined) =>
+  theme === THEME.DARK;
 
 export const DARK_THEME_FILTER = "invert(93%) hue-rotate(180deg)";
 

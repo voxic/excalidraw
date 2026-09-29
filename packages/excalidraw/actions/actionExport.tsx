@@ -1,4 +1,4 @@
-import { KEYS, THEME } from "@excalidraw/common";
+import { KEYS, THEME, isDarkTheme } from "@excalidraw/common";
 
 import { CaptureUpdateAction } from "@excalidraw/element";
 
@@ -453,7 +453,7 @@ export const actionExportWithDarkMode = register<
       <DarkModeToggle
         value={appState.exportWithDarkMode ? THEME.DARK : THEME.LIGHT}
         onChange={(theme: Theme) => {
-          updateData(theme === THEME.DARK);
+          updateData(isDarkTheme(theme));
         }}
         title={t("imageExportDialog.label.darkMode")}
       />

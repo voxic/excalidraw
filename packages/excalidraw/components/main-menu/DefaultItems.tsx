@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-import { THEME } from "@excalidraw/common";
+import { THEME, isDarkTheme } from "@excalidraw/common";
 
 import type { Theme } from "@excalidraw/element/types";
 
@@ -54,6 +54,7 @@ import {
   HelpIcon,
   LoadIcon,
   MoonIcon,
+  PaperScrollIcon,
   save,
   searchIcon,
   SunIcon,
@@ -280,6 +281,11 @@ export const ToggleTheme = (
             ariaLabel: `${t("buttons.darkMode")} - ${shortcut}`,
           },
           {
+            value: THEME.SEPIA,
+            label: PaperScrollIcon,
+            ariaLabel: t("buttons.sepiaMode"),
+          },
+          {
             value: "system",
             label: DeviceDesktopIcon,
             ariaLabel: t("buttons.systemMode"),
@@ -299,16 +305,16 @@ export const ToggleTheme = (
 
         actionManager.executeAction(actionToggleTheme);
       }}
-      icon={appState.theme === THEME.DARK ? SunIcon : MoonIcon}
+      icon={isDarkTheme(appState.theme) ? SunIcon : MoonIcon}
       data-testid="toggle-dark-mode"
       shortcut={shortcut}
       aria-label={
-        appState.theme === THEME.DARK
+        isDarkTheme(appState.theme)
           ? t("buttons.lightMode")
           : t("buttons.darkMode")
       }
     >
-      {appState.theme === THEME.DARK
+      {isDarkTheme(appState.theme)
         ? t("buttons.lightMode")
         : t("buttons.darkMode")}
     </DropdownMenuItem>

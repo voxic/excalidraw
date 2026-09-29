@@ -1,4 +1,4 @@
-import { THEME } from "@excalidraw/common";
+import { THEME, isDarkTheme } from "@excalidraw/common";
 
 import type { Theme } from "@excalidraw/element/types";
 
@@ -17,18 +17,16 @@ export const DarkModeToggle = (props: {
 }) => {
   const title =
     props.title ||
-    (props.value === THEME.DARK
-      ? t("buttons.lightMode")
-      : t("buttons.darkMode"));
+    (isDarkTheme(props.value) ? t("buttons.lightMode") : t("buttons.darkMode"));
 
   return (
     <IconButton
       type="icon"
-      icon={props.value === THEME.LIGHT ? ICONS.MOON : ICONS.SUN}
+      icon={isDarkTheme(props.value) ? ICONS.SUN : ICONS.MOON}
       title={title}
       aria-label={title}
       onClick={() =>
-        props.onChange(props.value === THEME.DARK ? THEME.LIGHT : THEME.DARK)
+        props.onChange(isDarkTheme(props.value) ? THEME.LIGHT : THEME.DARK)
       }
       data-testid="toggle-dark-mode"
     />

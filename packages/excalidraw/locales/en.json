@@ -250,6 +250,7 @@
     "fullScreen": "Full screen",
     "darkMode": "Dark mode",
     "lightMode": "Light mode",
+    "sepiaMode": "Sepia mode",
     "systemMode": "System mode",
     "zenMode": "Zen mode",
     "objectsSnapMode": "Snap to objects",
