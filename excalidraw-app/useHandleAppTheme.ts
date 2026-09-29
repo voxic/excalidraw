@@ -1,7 +1,7 @@
 import { THEME } from "@excalidraw/excalidraw";
 import { useEffect, useLayoutEffect, useState } from "react";
 
-import { isMemberOf } from "@excalidraw/common";
+import { isTheme } from "@excalidraw/common";
 
 import type { Theme } from "@excalidraw/element/types";
 
@@ -13,8 +13,7 @@ const getDarkThemeMediaQuery = (): MediaQueryList | undefined =>
 export const useHandleAppTheme = () => {
   const [appTheme, setAppTheme] = useState<Theme | "system">(() => {
     const storedTheme = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_THEME);
-    return storedTheme === "system" ||
-      (storedTheme && isMemberOf(Object.values(THEME), storedTheme))
+    return storedTheme === "system" || isTheme(storedTheme)
       ? storedTheme
       : THEME.LIGHT;
   });

@@ -23,8 +23,7 @@ import {
   getLineHeight,
   STROKE_WIDTH,
   STROKE_WIDTH_KEYS,
-  THEME,
-  isMemberOf,
+  isTheme,
   type StrokeWidthKey,
 } from "@excalidraw/common";
 import {
@@ -1232,8 +1231,10 @@ export const restoreAppState = (
     gridStep: getNormalizedGridStep(
       isFiniteNumber(appState.gridStep) ? appState.gridStep : DEFAULT_GRID_STEP,
     ),
-    theme: isMemberOf(Object.values(THEME), nextAppState.theme)
+    theme: isTheme(nextAppState.theme)
       ? nextAppState.theme
+      : isTheme(localAppState?.theme)
+      ? localAppState.theme
       : defaultAppState.theme,
     editingFrame: null,
   };

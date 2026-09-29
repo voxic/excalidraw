@@ -20,7 +20,7 @@ Please add the latest change on the top under the correct section.
 - Added a third theme, `THEME.SEPIA` (`"sepia"`): a warm, paper-like light theme. `Theme` is now `"light" | "dark" | "sepia"`. Sepia restyles the editor UI through CSS variables under the new `.excalidraw.theme--sepia` class, which is applied to the editor root and portal containers the same way as `.theme--dark`. The canvas and exports render exactly like light mode (no color inversion, and `exportWithDarkMode` defaults to `false`).
 - `MainMenu.DefaultItems.ToggleTheme` with `allowSystemTheme` now offers Light / Dark / Sepia / System. `"system"` still resolves only to light or dark.
 - The `toggleTheme` action (`Alt+Shift+D`, command palette) and `ToggleTheme` without `allowSystemTheme` still switch between light and dark: sepia switches to dark, and dark switches to light.
-- `restoreAppState()` now falls back to the default theme when the restored `theme` is not a known theme.
+- `restoreAppState()` now ignores unknown `theme` values, falling back to the local app state's theme and then to the default theme.
 - If your app checks `theme === THEME.LIGHT` to mean "not dark", check `theme !== THEME.DARK` instead so that sepia is treated as a light theme.
 
 ### Host-controlled active tool (2026-07-14) [#11665](https://github.com/excalidraw/excalidraw/pull/11665)

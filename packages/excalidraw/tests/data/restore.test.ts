@@ -984,13 +984,18 @@ describe("restoreAppState", () => {
     );
   });
 
-  it("should fall back to the default theme for unknown theme values", () => {
+  it("should fall back to the local, then default theme for unknown theme values", () => {
     expect(
       restore.restoreAppState({ theme: "midnight" } as any, null).theme,
     ).toBe(THEME.LIGHT);
     expect(
       restore.restoreAppState({ theme: 42 } as any, { theme: THEME.DARK })
         .theme,
+    ).toBe(THEME.DARK);
+    expect(
+      restore.restoreAppState({ theme: "midnight" } as any, {
+        theme: "also-unknown" as any,
+      }).theme,
     ).toBe(THEME.LIGHT);
     expect(
       restore.restoreAppState(null, { theme: "midnight" } as any).theme,
