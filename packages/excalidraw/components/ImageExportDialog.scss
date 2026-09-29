@@ -7,6 +7,10 @@
     --ImageExportModal-preview-border: #5c5c5c;
   }
 
+  &.theme--sepia {
+    --ImageExportModal-preview-border: var(--color-border-outline-variant);
+  }
+
   .ImageExportModal {
     display: flex;
     flex-direction: row;
