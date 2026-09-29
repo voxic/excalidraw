@@ -1,7 +1,12 @@
 import { pointFrom } from "@excalidraw/math";
 import { vi } from "vitest";
 
-import { DEFAULT_SIDEBAR, FONT_FAMILY, ROUNDNESS } from "@excalidraw/common";
+import {
+  DEFAULT_SIDEBAR,
+  FONT_FAMILY,
+  ROUNDNESS,
+  THEME,
+} from "@excalidraw/common";
 
 import { newElementWith } from "@excalidraw/element";
 import * as sizeHelpers from "@excalidraw/element";
@@ -968,6 +973,28 @@ describe("restoreAppState", () => {
         null,
       ).openSidebar,
     ).toEqual({ name: DEFAULT_SIDEBAR.name, tab: "ola" });
+  });
+
+  it("should restore the sepia theme", () => {
+    expect(restore.restoreAppState({ theme: THEME.SEPIA }, null).theme).toBe(
+      THEME.SEPIA,
+    );
+    expect(restore.restoreAppState({}, { theme: THEME.SEPIA }).theme).toBe(
+      THEME.SEPIA,
+    );
+  });
+
+  it("should fall back to the default theme for unknown theme values", () => {
+    expect(
+      restore.restoreAppState({ theme: "midnight" } as any, null).theme,
+    ).toBe(THEME.LIGHT);
+    expect(
+      restore.restoreAppState({ theme: 42 } as any, { theme: THEME.DARK })
+        .theme,
+    ).toBe(THEME.LIGHT);
+    expect(
+      restore.restoreAppState(null, { theme: "midnight" } as any).theme,
+    ).toBe(THEME.LIGHT);
   });
 });
 
