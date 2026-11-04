@@ -1278,6 +1278,7 @@ const RAINBOW_HUE_PERIOD = 240;
 /** max scene px length of a single uniformly colored rainbow segment */
 const RAINBOW_SEGMENT_LENGTH = 5;
 
+/** theme-independent: the dark mode filter turns yellows into muddy olives */
 export const getRainbowColor = (hue: number) =>
   `hsl(${Math.round(hue) % 360}, 90%, 55%)`;
 
