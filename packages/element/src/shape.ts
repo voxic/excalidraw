@@ -1282,6 +1282,32 @@ export const getRainbowColor = (hue: number) =>
   `hsl(${Math.round(hue) % 360}, 90%, 55%)`;
 
 /**
+ * The exact centerline `LaserPointer` builds the constant-width outline
+ * around (its streamline lerp differs from perfect-freehand's).
+ */
+const getLaserPointerCenterPoints = (element: ExcalidrawFreeDrawElement) => {
+  const t = 1 - getFreedrawStreamline(element);
+  const result: [number, number][] = [];
+  let lastInput: LocalPoint | null = null;
+  for (const point of element.points) {
+    if (lastInput && lastInput[0] === point[0] && lastInput[1] === point[1]) {
+      continue;
+    }
+    lastInput = point;
+    const prev = result[result.length - 1];
+    result.push(
+      prev
+        ? [
+            prev[0] + (point[0] - prev[0]) * t,
+            prev[1] + (point[1] - prev[1]) * t,
+          ]
+        : [point[0], point[1]],
+    );
+  }
+  return result;
+};
+
+/**
  * Samples the stroke centerline with the same midpoint-quadratic smoothing
  * `getSvgPathFromStroke` applies to the outline. Raw centerline chords can be
  * far apart (fast or straight drags) and miss the curved outline entirely.
@@ -1328,13 +1354,16 @@ const getSmoothedRainbowCenterline = (points: [number, number][]) => {
 export const getRainbowFreedrawSegments = (
   element: ExcalidrawFreeDrawElement,
 ) => {
+  const isConstantWidth = element.strokeOptions?.variability === "constant";
   const points = getSmoothedRainbowCenterline(
-    getFreedrawStrokeCenterPoints(element),
+    isConstantWidth
+      ? getLaserPointerCenterPoints(element)
+      : getFreedrawStrokeCenterPoints(element),
   );
-  const sizeFactor =
-    element.strokeOptions?.variability === "constant"
-      ? CONSTANT_WIDTH_FREEDRAW.SIZE_FACTOR
-      : VARIABLE_WIDTH_FREEDRAW.SIZE_FACTOR;
+  // LaserPointer `size` is a radius, perfect-freehand `size` a diameter
+  const outlineRadius = isConstantWidth
+    ? element.strokeWidth * CONSTANT_WIDTH_FREEDRAW.SIZE_FACTOR
+    : (element.strokeWidth * VARIABLE_WIDTH_FREEDRAW.SIZE_FACTOR) / 2;
 
   const segments: {
     from: [number, number];
@@ -1361,7 +1390,7 @@ export const getRainbowFreedrawSegments = (
     length += distance;
   }
 
-  return { segments, width: element.strokeWidth * sizeFactor * 1.5 };
+  return { segments, width: outlineRadius * 4 };
 };
 
 const med = (A: number[], B: number[]) => {

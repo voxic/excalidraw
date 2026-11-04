@@ -1,5 +1,6 @@
 import { KEYS, reseed } from "@excalidraw/common";
 import {
+  getFreedrawOutlinePoints,
   getRainbowFreedrawSegments,
   isRainbowFreeDrawElement,
 } from "@excalidraw/element";
@@ -123,4 +124,63 @@ describe("rainbow tool", () => {
       );
     }
   });
+
+  it.each(["constant", "variable"] as const)(
+    "segments cover the whole rendered %s-width outline",
+    (variability) => {
+      // sparse points along a half circle
+      const points = Array.from({ length: 8 }, (_, i) => {
+        const angle = (i / 7) * Math.PI;
+        return pointFrom<LocalPoint>(
+          200 - 200 * Math.cos(angle),
+          200 * Math.sin(angle),
+        );
+      });
+      const element = API.createElement({
+        type: "freedraw",
+        points,
+        strokeOptions: { variability, streamline: 0.5 },
+      });
+      const { segments, width } = getRainbowFreedrawSegments(element);
+
+      const distanceToSegments = ([x, y]: number[]) =>
+        Math.min(
+          ...segments.map(({ from, to }) => {
+            const dx = to[0] - from[0];
+            const dy = to[1] - from[1];
+            const t = Math.max(
+              0,
+              Math.min(
+                1,
+                ((x - from[0]) * dx + (y - from[1]) * dy) /
+                  (dx * dx + dy * dy || 1),
+              ),
+            );
+            return Math.hypot(x - from[0] - t * dx, y - from[1] - t * dy);
+          }),
+        );
+
+      // the outline is rendered as quadratic curves through the midpoints of
+      // its vertices (see `getSvgPathFromStroke`)
+      const outline = getFreedrawOutlinePoints(element);
+      const mid = (a: number[], b: number[]) => [
+        (a[0] + b[0]) / 2,
+        (a[1] + b[1]) / 2,
+      ];
+      for (let i = 0; i < outline.length; i++) {
+        const start = mid(outline.at(i - 1)!, outline[i]);
+        const control = outline[i];
+        const end = mid(outline[i], outline[(i + 1) % outline.length]);
+        for (let t = 0; t <= 1; t += 0.25) {
+          const point = [0, 1].map(
+            (axis) =>
+              (1 - t) ** 2 * start[axis] +
+              2 * (1 - t) * t * control[axis] +
+              t * t * end[axis],
+          );
+          expect(distanceToSegments(point)).toBeLessThanOrEqual(width / 2);
+        }
+      }
+    },
+  );
 });
