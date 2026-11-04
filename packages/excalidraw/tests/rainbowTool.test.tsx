@@ -1,5 +1,11 @@
 import { KEYS, reseed } from "@excalidraw/common";
-import { isRainbowFreeDrawElement } from "@excalidraw/element";
+import {
+  getRainbowFreedrawSegments,
+  isRainbowFreeDrawElement,
+} from "@excalidraw/element";
+import { pointFrom } from "@excalidraw/math";
+
+import type { LocalPoint } from "@excalidraw/math";
 
 import type { ExcalidrawFreeDrawElement } from "@excalidraw/element/types";
 
@@ -77,7 +83,7 @@ describe("rainbow tool", () => {
 
     drawStroke();
     act(() => h.app.setActiveTool({ type: "selection" }));
-    API.setSelectedElements([h.elements[0]]);
+    API.setSelectedElements([...h.app.scene.getNonDeletedElements()]);
     expect(screen.queryByTestId("color-top-pick-#1e1e1e")).toBeNull();
   });
 
@@ -86,7 +92,7 @@ describe("rainbow tool", () => {
     drawStroke();
 
     const svg = await exportToSvg(
-      h.elements,
+      h.app.scene.getNonDeletedElements(),
       { exportBackground: false, viewBackgroundColor: "#fff" },
       {},
     );
@@ -100,5 +106,21 @@ describe("rainbow tool", () => {
       ),
     );
     expect(colors.size).toBeGreaterThan(2);
+  });
+
+  it("cycles colors along long segments between sparse input points", () => {
+    const element = API.createElement({
+      type: "freedraw",
+      points: [pointFrom<LocalPoint>(0, 0), pointFrom<LocalPoint>(400, 0)],
+    });
+
+    const { segments } = getRainbowFreedrawSegments(element);
+    const colors = new Set(segments.map((segment) => segment.color));
+    expect(colors.size).toBeGreaterThan(30);
+    for (const { from, to } of segments) {
+      expect(Math.hypot(to[0] - from[0], to[1] - from[1])).toBeLessThanOrEqual(
+        5.0001,
+      );
+    }
   });
 });

@@ -1274,10 +1274,51 @@ export const getFreedrawStrokeCenterPoints = (
   }).map((strokePoint) => strokePoint.point as [number, number]);
 
 /** scene px of stroke length over which the rainbow cycles through all hues */
-const RAINBOW_HUE_PERIOD = 400;
+const RAINBOW_HUE_PERIOD = 240;
+/** max scene px length of a single uniformly colored rainbow segment */
+const RAINBOW_SEGMENT_LENGTH = 5;
 
 export const getRainbowColor = (hue: number) =>
   `hsl(${Math.round(hue) % 360}, 90%, 55%)`;
+
+/**
+ * Samples the stroke centerline with the same midpoint-quadratic smoothing
+ * `getSvgPathFromStroke` applies to the outline. Raw centerline chords can be
+ * far apart (fast or straight drags) and miss the curved outline entirely.
+ */
+const getSmoothedRainbowCenterline = (points: [number, number][]) => {
+  if (points.length < 3) {
+    return points;
+  }
+
+  const result: [number, number][] = [points[0]];
+  let start = points[0];
+  for (let i = 1; i < points.length - 1; i++) {
+    const control = points[i];
+    const end = med(control, points[i + 1]) as [number, number];
+    const steps = Math.max(
+      1,
+      Math.ceil(
+        (Math.hypot(control[0] - start[0], control[1] - start[1]) +
+          Math.hypot(end[0] - control[0], end[1] - control[1])) /
+          RAINBOW_SEGMENT_LENGTH,
+      ),
+    );
+    for (let step = 1; step <= steps; step++) {
+      const t = step / steps;
+      const a = (1 - t) * (1 - t);
+      const b = 2 * (1 - t) * t;
+      const c = t * t;
+      result.push([
+        a * start[0] + b * control[0] + c * end[0],
+        a * start[1] + b * control[1] + c * end[1],
+      ]);
+    }
+    start = end;
+  }
+  result.push(points[points.length - 1]);
+  return result;
+};
 
 /**
  * Colored centerline segments for a rainbow freedraw stroke, in element-local
@@ -1287,7 +1328,9 @@ export const getRainbowColor = (hue: number) =>
 export const getRainbowFreedrawSegments = (
   element: ExcalidrawFreeDrawElement,
 ) => {
-  const points = getFreedrawStrokeCenterPoints(element);
+  const points = getSmoothedRainbowCenterline(
+    getFreedrawStrokeCenterPoints(element),
+  );
   const sizeFactor =
     element.strokeOptions?.variability === "constant"
       ? CONSTANT_WIDTH_FREEDRAW.SIZE_FACTOR
@@ -1300,14 +1343,22 @@ export const getRainbowFreedrawSegments = (
   }[] = [];
   let length = 0;
   for (let i = 1; i < points.length; i++) {
-    const from = points[i - 1];
-    const to = points[i];
-    segments.push({
-      from,
-      to,
-      color: getRainbowColor((length / RAINBOW_HUE_PERIOD) * 360),
-    });
-    length += Math.hypot(to[0] - from[0], to[1] - from[1]);
+    const [x1, y1] = points[i - 1];
+    const [x2, y2] = points[i];
+    const distance = Math.hypot(x2 - x1, y2 - y1);
+    const steps = Math.max(1, Math.ceil(distance / RAINBOW_SEGMENT_LENGTH));
+    for (let step = 0; step < steps; step++) {
+      const t0 = step / steps;
+      const t1 = (step + 1) / steps;
+      segments.push({
+        from: [x1 + (x2 - x1) * t0, y1 + (y2 - y1) * t0],
+        to: [x1 + (x2 - x1) * t1, y1 + (y2 - y1) * t1],
+        color: getRainbowColor(
+          ((length + distance * t0) / RAINBOW_HUE_PERIOD) * 360,
+        ),
+      });
+    }
+    length += distance;
   }
 
   return { segments, width: element.strokeWidth * sizeFactor * 1.5 };
