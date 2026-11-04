@@ -1273,6 +1273,46 @@ export const getFreedrawStrokeCenterPoints = (
     last: true,
   }).map((strokePoint) => strokePoint.point as [number, number]);
 
+/** scene px of stroke length over which the rainbow cycles through all hues */
+const RAINBOW_HUE_PERIOD = 400;
+
+export const getRainbowColor = (hue: number) =>
+  `hsl(${Math.round(hue) % 360}, 90%, 55%)`;
+
+/**
+ * Colored centerline segments for a rainbow freedraw stroke, in element-local
+ * coordinates. Consumers clip them to the stroke outline, so `width` only has
+ * to be wide enough to cover the outline everywhere.
+ */
+export const getRainbowFreedrawSegments = (
+  element: ExcalidrawFreeDrawElement,
+) => {
+  const points = getFreedrawStrokeCenterPoints(element);
+  const sizeFactor =
+    element.strokeOptions?.variability === "constant"
+      ? CONSTANT_WIDTH_FREEDRAW.SIZE_FACTOR
+      : VARIABLE_WIDTH_FREEDRAW.SIZE_FACTOR;
+
+  const segments: {
+    from: [number, number];
+    to: [number, number];
+    color: string;
+  }[] = [];
+  let length = 0;
+  for (let i = 1; i < points.length; i++) {
+    const from = points[i - 1];
+    const to = points[i];
+    segments.push({
+      from,
+      to,
+      color: getRainbowColor((length / RAINBOW_HUE_PERIOD) * 360),
+    });
+    length += Math.hypot(to[0] - from[0], to[1] - from[1]);
+  }
+
+  return { segments, width: element.strokeWidth * sizeFactor * 1.5 };
+};
+
 const med = (A: number[], B: number[]) => {
   return [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
 };

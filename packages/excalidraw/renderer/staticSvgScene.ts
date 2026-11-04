@@ -25,6 +25,7 @@ import {
   isArrowElement,
   isIframeLikeElement,
   isInitializedImageElement,
+  isRainbowFreeDrawElement,
   isTextElement,
 } from "@excalidraw/element";
 
@@ -32,12 +33,17 @@ import { getContainingFrame } from "@excalidraw/element";
 
 import { getCornerRadius, isPathALoop } from "@excalidraw/element";
 
-import { ShapeCache } from "@excalidraw/element";
+import {
+  ShapeCache,
+  getRainbowColor,
+  getRainbowFreedrawSegments,
+} from "@excalidraw/element";
 
 import { getElementAbsoluteCoords } from "@excalidraw/element";
 
 import type {
   ExcalidrawElement,
+  ExcalidrawFreeDrawElement,
   ExcalidrawTextElementWithContainer,
   NonDeletedExcalidrawElement,
 } from "@excalidraw/element/types";
@@ -46,6 +52,43 @@ import type { RenderableElementsMap, SVGRenderConfig } from "../scene/types";
 import type { AppState, BinaryFiles } from "../types";
 import type { Drawable } from "roughjs/bin/core";
 import type { RoughSVG } from "roughjs/bin/svg";
+
+const renderRainbowFreedrawSegmentsSvg = (
+  svgRoot: SVGElement,
+  element: ExcalidrawFreeDrawElement,
+  outline: string,
+  isDarkMode: boolean,
+) => {
+  const doc = svgRoot.ownerDocument;
+  const { segments, width } = getRainbowFreedrawSegments(element);
+  const round = (n: number) => n.toFixed(MAX_DECIMALS_FOR_SVG_EXPORT);
+
+  const clipPath = doc.createElementNS(SVG_NS, "clipPath");
+  clipPath.id = `rainbow-clipPath-${element.id}`;
+  clipPath.setAttribute("clipPathUnits", "userSpaceOnUse");
+  const clipShape = doc.createElementNS(SVG_NS, "path");
+  clipShape.setAttribute("d", outline);
+  clipPath.appendChild(clipShape);
+
+  const group = doc.createElementNS(SVG_NS, "g");
+  group.appendChild(clipPath);
+  group.setAttribute("clip-path", `url(#${clipPath.id})`);
+  group.setAttribute("fill", "none");
+  group.setAttribute("stroke-width", round(width));
+  group.setAttribute("stroke-linecap", "round");
+
+  for (const { from, to, color } of segments) {
+    const line = doc.createElementNS(SVG_NS, "line");
+    line.setAttribute("x1", round(from[0]));
+    line.setAttribute("y1", round(from[1]));
+    line.setAttribute("x2", round(to[0]));
+    line.setAttribute("y2", round(to[1]));
+    line.setAttribute("stroke", applyDarkModeFilter(color, isDarkMode));
+    group.appendChild(line);
+  }
+
+  return group;
+};
 
 const roughSVGDrawWithPrecision = (
   rsvg: RoughSVG,
@@ -394,12 +437,25 @@ const renderElementToSvg = (
           path.setAttribute(
             "fill",
             applyDarkModeFilter(
-              element.strokeColor,
+              isRainbowFreeDrawElement(element)
+                ? getRainbowColor(0)
+                : element.strokeColor,
               renderConfig.theme === THEME.DARK,
             ),
           );
           path.setAttribute("d", shape);
           wrapper.appendChild(path);
+
+          if (isRainbowFreeDrawElement(element)) {
+            wrapper.appendChild(
+              renderRainbowFreedrawSegmentsSvg(
+                svgRoot,
+                element,
+                shape,
+                renderConfig.theme === THEME.DARK,
+              ),
+            );
+          }
         } else {
           // background (Drawable)
 

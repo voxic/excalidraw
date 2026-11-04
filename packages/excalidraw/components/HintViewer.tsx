@@ -96,6 +96,10 @@ const getHints = ({
     return t("hints.freeDraw");
   }
 
+  if (activeTool.type === "rainbow") {
+    return t("hints.rainbow");
+  }
+
   if (activeTool.type === "text") {
     return t("hints.text");
   }
