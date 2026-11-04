@@ -96,6 +96,11 @@ export const isFreeDrawElement = <T extends ExcalidrawElement>(
   return element != null && isFreeDrawElementType(element.type);
 };
 
+export const isRainbowFreeDrawElement = (
+  element?: ExcalidrawElement | null,
+): boolean =>
+  isFreeDrawElement(element) && element.customData?.rainbow === true;
+
 export const isFreeDrawElementType = (
   elementType: ExcalidrawElementType,
 ): boolean => {

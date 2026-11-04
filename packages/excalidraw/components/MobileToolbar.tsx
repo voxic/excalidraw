@@ -31,6 +31,7 @@ import {
   laserPointerToolIcon,
   drawShapeToolIcon,
   bucketFillIcon,
+  rainbowToolIcon,
   mermaidLogoIcon,
   MagicIcon,
 } from "./icons";
@@ -78,6 +79,7 @@ export const MobileToolbar = ({ app, setAppState }: MobileToolbarProps) => {
   const laserToolSelected = activeTool.type === "laser";
   const embeddableToolSelected = activeTool.type === "embeddable";
   const bucketFillToolSelected = activeTool.type === "bucketfill";
+  const rainbowToolSelected = activeTool.type === "rainbow";
 
   const { TTDDialogTriggerTunnel } = useTunnels();
 
@@ -118,6 +120,7 @@ export const MobileToolbar = ({ app, setAppState }: MobileToolbarProps) => {
       "embeddable",
       "laser",
       "bucketfill",
+      "rainbow",
       "magicframe",
     ] as const
   ).filter((tool) => {
@@ -143,6 +146,8 @@ export const MobileToolbar = ({ app, setAppState }: MobileToolbarProps) => {
       ? laserPointerToolIcon
       : activeTool.type === "bucketfill"
       ? bucketFillIcon
+      : activeTool.type === "rainbow"
+      ? rainbowToolIcon
       : activeTool.type === "magicframe"
       ? MagicIcon
       : DotsIcon
@@ -328,6 +333,15 @@ export const MobileToolbar = ({ app, setAppState }: MobileToolbarProps) => {
             disabled={isToolButtonDisabled(app, "bucketfill")}
           >
             {t("toolBar.bucketfill")}
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            onSelect={() => app.setActiveTool({ type: "rainbow" })}
+            icon={rainbowToolIcon}
+            data-testid="toolbar-rainbow"
+            selected={rainbowToolSelected}
+            disabled={isToolButtonDisabled(app, "rainbow")}
+          >
+            {t("toolBar.rainbow")}
           </DropdownMenu.Item>
           <div style={{ margin: "6px 0", fontSize: 14, fontWeight: 600 }}>
             Generate

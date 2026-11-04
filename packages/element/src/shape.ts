@@ -1273,6 +1273,127 @@ export const getFreedrawStrokeCenterPoints = (
     last: true,
   }).map((strokePoint) => strokePoint.point as [number, number]);
 
+/** scene px of stroke length over which the rainbow cycles through all hues */
+const RAINBOW_HUE_PERIOD = 240;
+/** max scene px length of a single uniformly colored rainbow segment */
+const RAINBOW_SEGMENT_LENGTH = 5;
+
+/** theme-independent: the dark mode filter turns yellows into muddy olives */
+export const getRainbowColor = (hue: number) =>
+  `hsl(${Math.round(hue) % 360}, 90%, 55%)`;
+
+/**
+ * The exact centerline `LaserPointer` builds the constant-width outline
+ * around (its streamline lerp differs from perfect-freehand's).
+ */
+const getLaserPointerCenterPoints = (element: ExcalidrawFreeDrawElement) => {
+  const t = 1 - getFreedrawStreamline(element);
+  const result: [number, number][] = [];
+  let lastInput: LocalPoint | null = null;
+  for (const point of element.points) {
+    if (lastInput && lastInput[0] === point[0] && lastInput[1] === point[1]) {
+      continue;
+    }
+    lastInput = point;
+    const prev = result[result.length - 1];
+    result.push(
+      prev
+        ? [
+            prev[0] + (point[0] - prev[0]) * t,
+            prev[1] + (point[1] - prev[1]) * t,
+          ]
+        : [point[0], point[1]],
+    );
+  }
+  return result;
+};
+
+/**
+ * Samples the stroke centerline with the same midpoint-quadratic smoothing
+ * `getSvgPathFromStroke` applies to the outline. Raw centerline chords can be
+ * far apart (fast or straight drags) and miss the curved outline entirely.
+ */
+const getSmoothedRainbowCenterline = (points: [number, number][]) => {
+  if (points.length < 3) {
+    return points;
+  }
+
+  const result: [number, number][] = [points[0]];
+  let start = points[0];
+  for (let i = 1; i < points.length - 1; i++) {
+    const control = points[i];
+    const end = med(control, points[i + 1]) as [number, number];
+    const steps = Math.max(
+      1,
+      Math.ceil(
+        (Math.hypot(control[0] - start[0], control[1] - start[1]) +
+          Math.hypot(end[0] - control[0], end[1] - control[1])) /
+          RAINBOW_SEGMENT_LENGTH,
+      ),
+    );
+    for (let step = 1; step <= steps; step++) {
+      const t = step / steps;
+      const a = (1 - t) * (1 - t);
+      const b = 2 * (1 - t) * t;
+      const c = t * t;
+      result.push([
+        a * start[0] + b * control[0] + c * end[0],
+        a * start[1] + b * control[1] + c * end[1],
+      ]);
+    }
+    start = end;
+  }
+  result.push(points[points.length - 1]);
+  return result;
+};
+
+/**
+ * Colored centerline segments for a rainbow freedraw stroke, in element-local
+ * coordinates. Consumers clip them to the stroke outline, so `width` only has
+ * to be wide enough to cover the outline everywhere.
+ */
+export const getRainbowFreedrawSegments = (
+  element: ExcalidrawFreeDrawElement,
+) => {
+  const isConstantWidth = element.strokeOptions?.variability === "constant";
+  const points = getSmoothedRainbowCenterline(
+    isConstantWidth
+      ? getLaserPointerCenterPoints(element)
+      : getFreedrawStrokeCenterPoints(element),
+  );
+  // LaserPointer `size` is a radius, perfect-freehand `size` a diameter
+  const outlineRadius = isConstantWidth
+    ? element.strokeWidth * CONSTANT_WIDTH_FREEDRAW.SIZE_FACTOR
+    : (element.strokeWidth * VARIABLE_WIDTH_FREEDRAW.SIZE_FACTOR) / 2;
+
+  const segments: {
+    from: [number, number];
+    to: [number, number];
+    color: string;
+  }[] = [];
+  let length = 0;
+  for (let i = 1; i < points.length; i++) {
+    const [x1, y1] = points[i - 1];
+    const [x2, y2] = points[i];
+    const distance = Math.hypot(x2 - x1, y2 - y1);
+    const steps = Math.max(1, Math.ceil(distance / RAINBOW_SEGMENT_LENGTH));
+    for (let step = 0; step < steps; step++) {
+      const t0 = step / steps;
+      const t1 = (step + 1) / steps;
+      segments.push({
+        from: [x1 + (x2 - x1) * t0, y1 + (y2 - y1) * t0],
+        to: [x1 + (x2 - x1) * t1, y1 + (y2 - y1) * t1],
+        color: getRainbowColor(
+          ((length + distance * t0) / RAINBOW_HUE_PERIOD) * 360,
+        ),
+      });
+    }
+    length += distance;
+  }
+
+  return { segments, width: outlineRadius * 4 };
+};
+
 const med = (A: number[], B: number[]) => {
   return [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
 };

@@ -211,6 +211,7 @@ import {
   getSelectedGroupIdForElement,
   getSelectedGroupIds,
   isElementInGroup,
+  isFreedrawTool,
   isSelectedViaGroup,
   selectGroupsForSelectedElements,
   syncInvalidIndices,
@@ -6106,7 +6107,7 @@ class App extends React.Component<AppProps, AppState> {
         hoveredArrowTextAnchor: null,
       } as const;
 
-      if (nextActiveTool.type === "freedraw") {
+      if (isFreedrawTool(nextActiveTool.type)) {
         this.store.scheduleCapture();
       }
 
@@ -8792,11 +8793,12 @@ class App extends React.Component<AppProps, AppState> {
         this.state.activeTool.type,
         pointerDownState,
       );
-    } else if (this.state.activeTool.type === "freedraw") {
+    } else if (isFreedrawTool(this.state.activeTool.type)) {
       this.handleFreeDrawElementOnPointerDown(
         event,
-        this.state.activeTool.type,
+        "freedraw",
         pointerDownState,
+        this.state.activeTool.type === "rainbow",
       );
     } else if (this.state.activeTool.type === "custom") {
       this.cursor.applyForTool();
@@ -9137,7 +9139,7 @@ class App extends React.Component<AppProps, AppState> {
 
       const distance = getDistance(Array.from(gesture.pointers.values()));
       const scaleFactor =
-        this.state.activeTool.type === "freedraw" && this.state.penMode
+        isFreedrawTool(this.state.activeTool.type) && this.state.penMode
           ? 1
           : distance / gesture.initialDistance;
 
@@ -9851,6 +9853,7 @@ class App extends React.Component<AppProps, AppState> {
     event: React.PointerEvent<HTMLElement>,
     elementType: ExcalidrawFreeDrawElement["type"],
     pointerDownState: PointerDownState,
+    rainbow = false,
   ) => {
     // Begin a mark capture. This does not have to update state yet.
     const [gridX, gridY] = getGridPoint(
@@ -9894,6 +9897,7 @@ class App extends React.Component<AppProps, AppState> {
       // pressures are only consumed when rendering a real-pressure stroke, so
       // skip persisting them while pressure is being simulated
       pressures: simulatePressure ? [] : [event.pressure],
+      ...(rainbow ? { customData: { rainbow: true } } : {}),
     });
 
     this.insertNewElement(element);
@@ -12416,7 +12420,7 @@ class App extends React.Component<AppProps, AppState> {
 
       if (
         !this.isToolLocked() &&
-        activeTool.type !== "freedraw" &&
+        !isFreedrawTool(activeTool.type) &&
         newElement
       ) {
         this.setState((prevState) => ({
@@ -12477,7 +12481,7 @@ class App extends React.Component<AppProps, AppState> {
 
       if (
         !this.isToolLocked() &&
-        activeTool.type !== "freedraw" &&
+        !isFreedrawTool(activeTool.type) &&
         // bucket fill stays active for back-to-back fills regardless of the
         // tool lock (paint-bucket UX)
         activeTool.type !== TOOL_TYPE.bucketfill &&

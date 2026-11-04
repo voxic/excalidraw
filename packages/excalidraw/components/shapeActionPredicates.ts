@@ -8,6 +8,7 @@ import {
   isImageElement,
   isLinearElement,
   isTextElement,
+  isRainbowFreeDrawElement,
   hasStrokeColor,
   toolIsArrow,
 } from "@excalidraw/element";
@@ -53,7 +54,10 @@ export const canChangeStrokeColor = (
       commonSelectedType !== "image" &&
       commonSelectedType !== "frame" &&
       commonSelectedType !== "magicframe") ||
-    targetElements.some((element) => hasStrokeColor(element.type))
+    targetElements.some(
+      (element) =>
+        hasStrokeColor(element.type) && !isRainbowFreeDrawElement(element),
+    )
   );
 };
 
@@ -147,6 +151,7 @@ export const getShapeActionPredicates = (
     // active without an actual selection
     layers:
       (activeToolType !== "freedraw" &&
+        activeToolType !== "rainbow" &&
         activeToolType !== "autoshape" &&
         !targetElements.some((element) => element.type === "freedraw")) ||
       getSelectedElements(elementsMap, appState).some(

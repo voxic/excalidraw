@@ -639,6 +639,20 @@ export const bucketFillIcon = createIcon(
   tablerIconProps,
 );
 
+export const rainbowToolIcon = createIcon(
+  <g strokeWidth={1.75}>
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path
+      stroke="#e03131"
+      d="M22 17c0 -5.523 -4.477 -10 -10 -10s-10 4.477 -10 10"
+    />
+    <path stroke="#f08c00" d="M19 17a7 7 0 1 0 -14 0" />
+    <path stroke="#2f9e44" d="M16 17a4 4 0 1 0 -8 0" />
+    <path stroke="#1971c2" d="M13 17a1 1 0 1 0 -2 0" />
+  </g>,
+  tablerIconProps,
+);
+
 // simple / icon
 export const slashIcon = createIcon(
   <g strokeWidth={1.5}>

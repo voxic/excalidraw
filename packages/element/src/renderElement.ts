@@ -57,6 +57,7 @@ import {
   isTextElement,
   isLinearElement,
   isFreeDrawElement,
+  isRainbowFreeDrawElement,
   isInitializedImageElement,
   isArrowElement,
   hasBoundTextElement,
@@ -66,7 +67,11 @@ import {
 import { getContainingFrame } from "./frame";
 import { getCornerRadius } from "./utils";
 
-import { ShapeCache } from "./shape";
+import {
+  ShapeCache,
+  getRainbowColor,
+  getRainbowFreedrawSegments,
+} from "./shape";
 
 import type {
   ExcalidrawElement,
@@ -315,6 +320,31 @@ const drawImagePlaceholder = (
   );
 };
 
+const drawRainbowFreedrawStroke = (
+  element: ExcalidrawFreeDrawElement,
+  outline: Path2D,
+  context: CanvasRenderingContext2D,
+) => {
+  const { segments, width } = getRainbowFreedrawSegments(element);
+
+  // base fill keeps dots (no segments) and segment seams colored
+  context.fillStyle = getRainbowColor(0);
+  context.fill(outline);
+
+  context.save();
+  context.clip(outline);
+  context.lineWidth = width;
+  context.lineCap = "round";
+  for (const { from, to, color } of segments) {
+    context.strokeStyle = color;
+    context.beginPath();
+    context.moveTo(from[0], from[1]);
+    context.lineTo(to[0], to[1]);
+    context.stroke();
+  }
+  context.restore();
+};
+
 const drawElementOnCanvas = (
   element: NonDeletedExcalidrawElement,
   rc: RoughCanvas,
@@ -352,7 +382,9 @@ const drawElementOnCanvas = (
       const shapes = ShapeCache.generateElementShape(element, renderConfig);
 
       for (const shape of shapes) {
-        if (typeof shape === "string") {
+        if (typeof shape === "string" && isRainbowFreeDrawElement(element)) {
+          drawRainbowFreedrawStroke(element, new Path2D(shape), context);
+        } else if (typeof shape === "string") {
           context.fillStyle = applyDarkModeFilter(
             element.strokeColor,
             renderConfig.theme === THEME.DARK,

@@ -25,6 +25,7 @@ import {
   EraserIcon,
   laserPointerToolIcon,
   bucketFillIcon,
+  rainbowToolIcon,
   LassoIcon,
   handIcon,
   frameToolIcon,
@@ -130,6 +131,11 @@ export const TOOLS = defineTools({
   frame: {
     icon: frameToolIcon,
     letterKey: KEYS.F,
+  },
+  rainbow: {
+    icon: rainbowToolIcon,
+    letterKey: KEYS.P,
+    shiftKey: true,
   },
   autoshape: {
     icon: drawShapeToolIcon,
