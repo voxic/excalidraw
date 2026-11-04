@@ -57,7 +57,6 @@ const renderRainbowFreedrawSegmentsSvg = (
   svgRoot: SVGElement,
   element: ExcalidrawFreeDrawElement,
   outline: string,
-  isDarkMode: boolean,
 ) => {
   const doc = svgRoot.ownerDocument;
   const { segments, width } = getRainbowFreedrawSegments(element);
@@ -83,7 +82,7 @@ const renderRainbowFreedrawSegmentsSvg = (
     line.setAttribute("y1", round(from[1]));
     line.setAttribute("x2", round(to[0]));
     line.setAttribute("y2", round(to[1]));
-    line.setAttribute("stroke", applyDarkModeFilter(color, isDarkMode));
+    line.setAttribute("stroke", color);
     group.appendChild(line);
   }
 
@@ -436,24 +435,19 @@ const renderElementToSvg = (
           const path = svgRoot.ownerDocument.createElementNS(SVG_NS, "path");
           path.setAttribute(
             "fill",
-            applyDarkModeFilter(
-              isRainbowFreeDrawElement(element)
-                ? getRainbowColor(0)
-                : element.strokeColor,
-              renderConfig.theme === THEME.DARK,
-            ),
+            isRainbowFreeDrawElement(element)
+              ? getRainbowColor(0)
+              : applyDarkModeFilter(
+                  element.strokeColor,
+                  renderConfig.theme === THEME.DARK,
+                ),
           );
           path.setAttribute("d", shape);
           wrapper.appendChild(path);
 
           if (isRainbowFreeDrawElement(element)) {
             wrapper.appendChild(
-              renderRainbowFreedrawSegmentsSvg(
-                svgRoot,
-                element,
-                shape,
-                renderConfig.theme === THEME.DARK,
-              ),
+              renderRainbowFreedrawSegmentsSvg(svgRoot, element, shape),
             );
           }
         } else {

@@ -324,12 +324,11 @@ const drawRainbowFreedrawStroke = (
   element: ExcalidrawFreeDrawElement,
   outline: Path2D,
   context: CanvasRenderingContext2D,
-  isDarkMode: boolean,
 ) => {
   const { segments, width } = getRainbowFreedrawSegments(element);
 
   // base fill keeps dots (no segments) and segment seams colored
-  context.fillStyle = applyDarkModeFilter(getRainbowColor(0), isDarkMode);
+  context.fillStyle = getRainbowColor(0);
   context.fill(outline);
 
   context.save();
@@ -337,7 +336,7 @@ const drawRainbowFreedrawStroke = (
   context.lineWidth = width;
   context.lineCap = "round";
   for (const { from, to, color } of segments) {
-    context.strokeStyle = applyDarkModeFilter(color, isDarkMode);
+    context.strokeStyle = color;
     context.beginPath();
     context.moveTo(from[0], from[1]);
     context.lineTo(to[0], to[1]);
@@ -384,12 +383,7 @@ const drawElementOnCanvas = (
 
       for (const shape of shapes) {
         if (typeof shape === "string" && isRainbowFreeDrawElement(element)) {
-          drawRainbowFreedrawStroke(
-            element,
-            new Path2D(shape),
-            context,
-            renderConfig.theme === THEME.DARK,
-          );
+          drawRainbowFreedrawStroke(element, new Path2D(shape), context);
         } else if (typeof shape === "string") {
           context.fillStyle = applyDarkModeFilter(
             element.strokeColor,
